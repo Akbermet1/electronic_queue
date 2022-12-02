@@ -42,7 +42,8 @@ INSTALLED_APPS = [
 
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
-    
+    "corsheaders",
+
     "base.apps.BaseConfig",
 ]
 
@@ -85,6 +86,9 @@ SIMPLE_JWT = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+
+    "corsheaders.middleware.CorsMiddleware",
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -168,3 +172,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 FIRESTORE_JSON_PATH = config("FIRESTORE_JSON_PATH")
+
+
+CORS_ALLOW_ALL_ORIGINS = True
