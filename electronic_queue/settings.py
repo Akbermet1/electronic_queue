@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "corsheaders",
 
     "base.apps.BaseConfig",
+    "user",
 ]
 
 REST_FRAMEWORK = {
@@ -175,3 +176,7 @@ FIRESTORE_JSON_PATH = config("FIRESTORE_JSON_PATH")
 
 
 CORS_ALLOW_ALL_ORIGINS = True
+# for the frontend to be able to receive the cookies
+CORS_ALLOW_CREDENTIALS = True
+
+AUTH_USER_MODEL = "user.User"
