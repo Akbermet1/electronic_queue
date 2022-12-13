@@ -59,3 +59,29 @@ class QueueInFirestoreDetailView(APIView):
         else:
             return Response("Provided ID didn't match any queue!", status=status.HTTP_406_NOT_ACCEPTABLE)
 
+
+class QueueInFirestorePartialUpdateView(APIView):
+    def post(self, request, queue_id):
+        new_name = request.data.get("new_name", None)
+        customer_count_visible = request.data.get("customer_count_visible", None)
+        queue_ref = db.collection(QUEUES_COLLECTION_ID).document(queue_id)
+
+        if new_name is None and customer_count_visible is None:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        if queue_ref.get().exists:
+            if new_name is not None:
+                queue_ref.update({
+                    "name": new_name
+                })
+        
+            if customer_count_visible is not None and isinstance(customer_count_visible, bool):
+                queue_ref.update({
+                    "customer_count_visible": customer_count_visible
+                })
+
+            return Response(queue_ref.get().to_dict(), status=status.HTTP_200_OK)
+        else:
+            return Response("Provided ID didn't match any queue!", status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
