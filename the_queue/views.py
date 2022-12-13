@@ -38,3 +38,24 @@ class QueueInFirebaseListCreateView(APIView):
         print("the queue: ", serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class QueueInFirestoreDetailView(APIView):
+    def get(self, request, queue_id):
+        queue = db.collection(QUEUES_COLLECTION_ID).document(queue_id).get()
+
+        if queue.exists:
+            return Response(queue.to_dict(), status=status.HTTP_200_OK)
+        else:
+            return Response("Provided ID didn't match any queue!", status=status.HTTP_406_NOT_ACCEPTABLE)
+
+    
+    def delete(self, request, queue_id):
+        queue_ref = db.collection(QUEUES_COLLECTION_ID).document(queue_id)
+
+        if queue_ref.get().exists:
+            print("queue contents:\n", queue_ref.get().to_dict())
+            queue_ref.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response("Provided ID didn't match any queue!", status=status.HTTP_406_NOT_ACCEPTABLE)
+
