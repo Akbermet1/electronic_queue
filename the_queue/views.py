@@ -17,7 +17,7 @@ def check_if_institution_exists(institution_id):
     return False
 
 
-class QueueInFirebaseListCreateView(APIView):
+class QueueInFirestoreListCreateView(APIView):
     def get(self, request):
         all_queues = db.collection(QUEUES_COLLECTION_ID).stream()
         list_of_queues = [queue.to_dict() for queue in all_queues]
