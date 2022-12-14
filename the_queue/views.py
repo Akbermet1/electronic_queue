@@ -30,13 +30,17 @@ class QueueInFirebaseListCreateView(APIView):
         serializer.is_valid(raise_exception=True)
         queue_id = serializer.data.get("queue_id")
         try:
-            db.collection(QUEUES_COLLECTION_ID).document(queue_id).set(serializer.data)
-            # also create a collection "the_queue" in the doc created above
-        except:
-            return Response("Something went wrong when creating a document in the collection")
+            if not db.collection(QUEUES_COLLECTION_ID).document(queue_id).get().exists:
+                queue_ref =  db.collection(QUEUES_COLLECTION_ID).document(queue_id)
+                queue_ref.set(serializer.data)
+            else:
+                return Response("Queue not created", status=status.HTTP_204_NO_CONTENT)
+        except Exception as exception:
+            print("exception: ", exception)
+            return Response(f"Something went wrong when creating a document in the collection.\nException: {exception}")
 
-        print("the queue: ", serializer.data)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        print("the queue: ", db.collection(QUEUES_COLLECTION_ID).document(queue_id).get().to_dict())
+        return Response(queue_ref.get().to_dict(), status=status.HTTP_200_OK)
 
 
 class QueueInFirestoreDetailView(APIView):
