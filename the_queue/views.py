@@ -36,10 +36,8 @@ class QueueInFirestoreListCreateView(APIView):
             else:
                 return Response("Queue not created", status=status.HTTP_204_NO_CONTENT)
         except Exception as exception:
-            print("exception: ", exception)
             return Response(f"Something went wrong when creating a document in the collection.\nException: {exception}")
 
-        print("the queue: ", db.collection(QUEUES_COLLECTION_ID).document(queue_id).get().to_dict())
         return Response(queue_ref.get().to_dict(), status=status.HTTP_200_OK)
 
 

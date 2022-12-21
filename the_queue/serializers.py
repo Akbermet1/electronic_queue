@@ -10,6 +10,7 @@ class QueueInFirebaseSerializer(serializers.Serializer):
     customer_count = serializers.IntegerField(read_only=True, default=0)
     queue_id = serializers.SerializerMethodField()
     name = serializers.CharField()
+    queue = serializers.ListField(read_only=True, default=[])
 
     def validate_institution_id(self, institution_id):
         collection_title = "institutions"
