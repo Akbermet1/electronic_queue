@@ -31,3 +31,9 @@ class BranchInFirestoreListCreateView(APIView):
         branch_ref = db.collection(BRANCH_COLLECTION_ID).document(branch_id)
         branch_ref.set(serializer.data)
         return Response(branch_ref.get().to_dict(), status=status.HTTP_200_OK)
+
+    def get(self, reuqest):
+        all_branches = db.collection(BRANCH_COLLECTION_ID).stream()
+        list_of_branches = [branch.to_dict() for branch in all_branches]
+
+        return Response(list_of_branches, status=status.HTTP_200_OK)
