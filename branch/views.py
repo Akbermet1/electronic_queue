@@ -18,8 +18,14 @@ class BranchInFirestoreDetailView(APIView):
         else:
             return Response("Provided ID didn't match any branch!", status=status.HTTP_406_NOT_ACCEPTABLE)
 
-    def post(self, request, branch_id):
-        ...
+    def delete(self, request, branch_id):
+        branch_ref = db.collection(BRANCH_COLLECTION_ID).document(branch_id)
+
+        if branch_ref.get().exists:
+            branch_ref.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response("Provided ID didn't match any branch!", status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
 class BranchInFirestoreListCreateView(APIView):
