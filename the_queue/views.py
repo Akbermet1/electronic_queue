@@ -11,6 +11,7 @@ from the_queue.serializers import QueueInFirebaseSerializer
 
 INSTITUTIONS_COLLECTION_ID = "institutions"
 QUEUES_COLLECTION_ID = "queues"
+CONFIRMATION_CODES_COLLECTION_ID = "confirmation_codes"
 
 
 def check_if_institution_exists(institution_id):
@@ -109,7 +110,12 @@ class CustomerInQueueCreateView(APIView):
 
             queue_ref.update({
                 "queue": firestore.ArrayUnion([confirmation_code])
-                })
+            })
+
+            # save information about the confirmation code
+            db.collection(CONFIRMATION_CODES_COLLECTION_ID).document(confirmation_code).set({"document_id": confirmation_code,
+                                                                                            "user_email": recipients_email,
+                                                                                            "user_phone_number": ""})
 
             send_mail(
                 subject=f"Confirmation of reserving a place in {queue_doc} queue of {institution_name}",
