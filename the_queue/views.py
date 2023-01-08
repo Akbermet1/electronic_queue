@@ -122,3 +122,19 @@ class CustomerInQueueCreateView(APIView):
                             status=status.HTTP_200_OK)
         else:
             return Response("Enter the email of a recepient and the ID of the queue!", status=status.HTTP_204_NO_CONTENT)
+
+
+class CustomerInQueueDetailView(APIView):
+    def get(self, request, queue_id, confirmation_code):
+        queue_ref = db.collection(QUEUES_COLLECTION_ID).document(queue_id)
+        if not queue_ref.get().exists:
+            return Response("Invalid queue_id was provied.", status=status.HTTP_204_NO_CONTENT)
+        
+        the_queue = queue_ref.get().to_dict().get("queue")
+        
+        if confirmation_code in the_queue:
+            customer_index = the_queue.index(confirmation_code)
+            return Response(f"There are {customer_index} people ahead of you in line.", status=status.HTTP_200_OK)
+        else:
+            return Response("Invalid confirmation_code was provied.", status=status.HTTP_204_NO_CONTENT)    
+
