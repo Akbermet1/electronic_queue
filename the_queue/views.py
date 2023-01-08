@@ -151,3 +151,28 @@ class CustomerInQueueDetailView(APIView):
         )
 
         return Response(f"Customer with the confimation code: {confirmation_code} was removed from the queue.", status=status.HTTP_204_NO_CONTENT)
+
+
+class QueueInFirebaseMoveView(APIView):
+    def delete(self, request, queue_id):
+        queue_ref = db.collection(QUEUES_COLLECTION_ID).document(queue_id)
+        if not queue_ref.get().exists:
+            return Response("Invalid queue_id was provied.", status=status.HTTP_204_NO_CONTENT)
+
+        the_queue = queue_ref.get().to_dict().get("queue", None)
+
+        if the_queue is None:
+            return Response("Something is wrong with the queue. Please contact the admin.", status=status.HTTP_204_NO_CONTENT)
+
+        confirmation_code = the_queue.pop(0) if len(the_queue) >= 1 else None
+
+        if confirmation_code is not None:
+            queue_ref.update(
+                {
+                    "queue": firestore.ArrayRemove([confirmation_code])    
+                }
+            )
+            return Response(f"Customer with the confimation code: {confirmation_code} was removed from the queue.", status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response("The queue is empty.", status=status.HTTP_204_NO_CONTENT)
+
