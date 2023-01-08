@@ -134,7 +134,19 @@ class CustomerInQueueDetailView(APIView):
         
         if confirmation_code in the_queue:
             customer_index = the_queue.index(confirmation_code)
-            return Response(f"There are {customer_index} people ahead of you in line.", status=status.HTTP_200_OK)
+            message = ""
+
+            if customer_index == 0:
+                message = "are no people"
+            elif customer_index == 1:
+                message = "is 1 person"
+            else:
+                message = f"are {customer_index} people"
+
+            return Response({
+                "message": f"There {message} ahead of you in line.",
+                "number_in_line": customer_index + 1 
+            }, status=status.HTTP_200_OK)
         else:
             return Response("Invalid confirmation_code was provied.", status=status.HTTP_204_NO_CONTENT)    
 
