@@ -60,7 +60,6 @@ class QueueInFirestoreDetailView(APIView):
         queue_ref = db.collection(QUEUES_COLLECTION_ID).document(queue_id)
 
         if queue_ref.get().exists:
-            print("queue contents:\n", queue_ref.get().to_dict())
             queue_ref.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
