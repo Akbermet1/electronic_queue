@@ -170,7 +170,7 @@ class CustomerInQueueDetailView(APIView):
         return Response(f"Customer with the confimation code: {confirmation_code} was removed from the queue.", status=status.HTTP_204_NO_CONTENT)
 
 
-class QueueInFirebaseMoveView(APIView):
+class QueueInFirestoreMoveView(APIView):
     def delete(self, request, queue_id):
         queue_ref = db.collection(QUEUES_COLLECTION_ID).document(queue_id)
         if not queue_ref.get().exists:
