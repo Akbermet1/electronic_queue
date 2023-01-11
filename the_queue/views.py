@@ -4,6 +4,7 @@ from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.renderers import TemplateHTMLRenderer
 from firebase_admin import firestore
 
 from electronic_queue.firestore import db
@@ -23,11 +24,14 @@ def check_if_institution_exists(institution_id):
 
 
 class QueueInFirestoreListCreateView(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'queue_list.html'
+
     def get(self, request):
         all_queues = db.collection(QUEUES_COLLECTION_ID).stream()
         list_of_queues = [queue.to_dict() for queue in all_queues]
 
-        return Response(list_of_queues, status=status.HTTP_200_OK)
+        return Response({"queues": list_of_queues}, status=status.HTTP_200_OK)
 
     def post(self, request):
         data = request.data
@@ -51,7 +55,7 @@ class QueueInFirestoreDetailView(APIView):
         queue = db.collection(QUEUES_COLLECTION_ID).document(queue_id).get()
 
         if queue.exists:
-            return Response(queue.to_dict(), status=status.HTTP_200_OK)
+            return Response({"queue": queue.to_dict()}, status=status.HTTP_200_OK)
         else:
             return Response("Provided ID didn't match any queue!", status=status.HTTP_406_NOT_ACCEPTABLE)
 
