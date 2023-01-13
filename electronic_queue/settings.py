@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "base.apps.BaseConfig",
     "user",
     "the_queue",
+    "institution",
 ]
 
 REST_FRAMEWORK = {
