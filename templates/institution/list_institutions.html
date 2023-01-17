@@ -1,6 +1,39 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>Institutions</h1>
+  <div class="p-4 p-md-5 mb-4 rounded text-bg-dark">
+    <h1>Institutions</h1>
+    <div>
+      <a href="#" class="text-decoration-none link-light"> # </a> 
+      {% for char in alphabet %}
+        <a href="#" class="text-decoration-none link-light"> {{ char }} </a> 
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+  {% for institution in institutions %}
+    <div class="col">
+      <div class="card">
+              <h5 class="card-header">{{ institution.name }}</h5>
+              <div class="card-body">
+                <div class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    List of queues
+                  </button>
+                  <ul class="dropdown-menu">
+                    {% for name in institution.queues %}
+                      <li><a class="dropdown-item" href="#">{{name}}</a></li>
+                    {% empty %}
+                      <li><a class="dropdown-item" href="#">This insitution doesn't have any arrays for now</a></li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+
 
 {% endblock %}
