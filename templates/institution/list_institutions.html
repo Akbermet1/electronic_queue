@@ -23,7 +23,8 @@
                   </button>
                   <ul class="dropdown-menu">
                     {% for name in institution.queues %}
-                      <li><a class="dropdown-item" href="#">{{name}}</a></li>
+                      {% url 'queue-in-firebase-list-create' as the_url_to_queue %}
+                      <li><a class="dropdown-item" href="{{ the_url_to_queue }}">{{name}}</a></li>
                     {% empty %}
                       <li><a class="dropdown-item" href="#">This insitution doesn't have any arrays for now</a></li>
                     {% endfor %}
