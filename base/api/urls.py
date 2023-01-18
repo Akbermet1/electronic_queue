@@ -14,4 +14,5 @@ urlpatterns = [
     path("user/", include("user.urls")),
     path("queues/", include("the_queue.urls")),
     path("branch/", include("branch.urls")),
+    path("institution/", include("institution.urls")),
 ]
