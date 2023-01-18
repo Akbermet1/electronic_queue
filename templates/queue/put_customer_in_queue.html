@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if not email_sent %}
+  <div class="row row-cols-1 row-cols-md-3 g-4" style="margin-bottom: 15px; margin-top: 15px;">
+    <form method="POST">
+      {% csrf_token %}
+        <div class="mb-3">
+          <label for="exampleInputEmail1" class="form-label">Email address</label>
+          <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="email">
+          <div id="emailHelp" class="form-text">You will receive a confirmation code to the provided email, please show it at the institution.</div>
+        </div>        
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+{% else %}
+
+  <div class="card" style="margin-top: 15px; margin-bottom: 15x;">
+    <div class="card-body">
+      You have been added to the "{{ queue_name }}" queue, and your confimation code has been sent to the following email address: {{ email }}.
+    </div>
+  </div>
+
+{% endif %}
+{% endblock %}

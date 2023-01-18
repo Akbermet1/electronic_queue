@@ -1,6 +1,7 @@
 import uuid
 from django.core.mail import send_mail
 from django.conf import settings
+from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -93,6 +94,56 @@ class QueueInFirestorePartialUpdateView(APIView):
             return Response(queue_ref.get().to_dict(), status=status.HTTP_200_OK)
         else:
             return Response("Provided ID didn't match any queue!", status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+def put_customer_in_queue_view(request, queue_id):
+    context = {
+        "queue_exists": False,
+        "email_sent": False
+    }
+
+    queue_ref = db.collection(QUEUES_COLLECTION_ID).document(queue_id)
+
+
+    if request.method == "POST":
+        recipients_email = request.POST.get("email", None)
+
+        if recipients_email is not None and queue_id is not None:
+            queue_ref = db.collection(QUEUES_COLLECTION_ID).document(queue_id)
+
+            if queue_ref.get().exists:
+                context["queue_exists"] = True
+                context["email"] = recipients_email
+                context["queue_id"] = queue_id
+                context["queue_name"] = queue_ref.get().to_dict().get("name")
+
+                queue_doc = queue_ref.get().to_dict().get("name")
+                institution_id = queue_ref.get().to_dict().get("institution_id")
+                institution_doc = db.collection(INSTITUTIONS_COLLECTION_ID).document(institution_id).get().to_dict()
+                institution_name = institution_doc.get("name", None)
+                confirmation_code = str(uuid.uuid4())[:10]
+
+                queue_ref.update({
+                    "queue": firestore.ArrayUnion([confirmation_code])
+                })
+
+                # save information about the confirmation code
+                db.collection(CONFIRMATION_CODES_COLLECTION_ID).document(confirmation_code).set({"document_id": confirmation_code,
+                                                                                                "user_email": recipients_email,
+                                                                                                "user_phone_number": ""})
+
+                send_mail(
+                    subject=f"Confirmation of reserving a place in {queue_doc} queue of {institution_name}",
+                    message=f"Your confirmation code: {confirmation_code}",
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[recipients_email],
+                    fail_silently=False
+                )
+                context["email_sent"] = True
+
+
+    return render(request, "./queue/put_customer_in_queue.html",
+                context=context)
 
 
 class CustomerInQueueCreateView(APIView):
