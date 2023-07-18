@@ -16,3 +16,8 @@ def list_institutions(request):
 
 def test_view(request):
     return render(request, "base.html")
+
+
+def register_institution_view(request):
+    return render(request, "./institution/register_institutions.html")
+
