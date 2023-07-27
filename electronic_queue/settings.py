@@ -183,7 +183,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 # for the frontend to be able to receive the cookies
 CORS_ALLOW_CREDENTIALS = True
 
-AUTH_USER_MODEL = "user.User"
+AUTH_USER_MODEL = "institution.User"
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
