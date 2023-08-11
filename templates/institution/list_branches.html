@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="p-4 p-md-5 mb-4 rounded text-bg-dark">
+    <h1>Branches of {{ instituion.name }} </h1>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for branch in branches %}
+      <div class="col">
+        <div class="card">
+                <h5 class="card-header">{{ branch.address }}</h5>
+                <div class="card-body">
+                  <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      Working hours
+                    </button>  
+                    <ul class="dropdown-menu"> 
+                        <li><a class="dropdown-item" href="#">{{ branch.working_hours }}</a></li>                 
+                    </ul>
+                  </div>
+                </div>
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+
+{% endblock %}

@@ -27,5 +27,9 @@ def list_all_branches_of_institution_view(request, institution_id):
     branches_ref = db.collection(BRANCH_COLLECTION_ID)
     docs_of_branches = branches_ref.where("institution_id", "==", institution_id).stream()
     branches = [branch.to_dict() for branch in docs_of_branches]
-    response = {"branches of this institution": branches}
-    return Response(response, status=status.HTTP_200_OK)
+    instituion = db.collection(INSTITUTIONS_COLLECTION_ID).document(institution_id).get().to_dict()
+    context = {
+        "branches": branches,
+        "instituion": instituion
+    }
+    return render(request, "./institution/list_branches.html", context=context)
