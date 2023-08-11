@@ -1,4 +1,8 @@
 from django.shortcuts import render
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.decorators import api_view
+from branch.views import BRANCH_COLLECTION_ID
 from electronic_queue.firestore import db
 from the_queue.views import INSTITUTIONS_COLLECTION_ID
 
@@ -16,3 +20,12 @@ def list_institutions(request):
 
 def test_view(request):
     return render(request, "base.html")
+
+
+@api_view(["GET"])
+def list_all_branches_of_institution_view(request, institution_id):
+    branches_ref = db.collection(BRANCH_COLLECTION_ID)
+    docs_of_branches = branches_ref.where("institution_id", "==", institution_id).stream()
+    branches = [branch.to_dict() for branch in docs_of_branches]
+    response = {"branches of this institution": branches}
+    return Response(response, status=status.HTTP_200_OK)
