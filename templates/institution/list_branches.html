@@ -13,16 +13,23 @@
                 <div class="card-body">
                   <div class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      Working hours
+                      Queues of this branch
                     </button>  
                     <ul class="dropdown-menu"> 
-                        <li><a class="dropdown-item" href="#">{{ branch.working_hours }}</a></li>                 
+                        <!-- loop through the queues of the branch  -->
+                        <li><a class="dropdown-item" href="#">list of queues</a></li>                 
                     </ul>
+                    <h4 style="margin-top: 10px;">Working hours</h4>
+                   {% for name, schedule in branch.working_hours.items %}
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">{{ name }} - from {{schedule.from}} till {{schedule.till}}</li>
+                    </ul>
+                    {% endfor %}
                   </div>
                 </div>
         </div>
       </div>
     {% endfor %}
-    </div>
+</div>
 
 {% endblock %}
