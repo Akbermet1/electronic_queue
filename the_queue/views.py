@@ -10,6 +10,7 @@ from firebase_admin import firestore
 
 from electronic_queue.firestore import db
 from the_queue.serializers import QueueInFirebaseSerializer
+from branch.views import BRANCH_COLLECTION_ID
 
 INSTITUTIONS_COLLECTION_ID = "institutions"
 QUEUES_COLLECTION_ID = "queues"
@@ -25,9 +26,8 @@ def check_if_institution_exists(institution_id):
 
 
 class QueueInFirestoreListCreateView(APIView):
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'queue_list.html'
-
+    # renderer_classes = [TemplateHTMLRenderer]
+    # template_name = 'queue_list.html'
     def get(self, request):
         all_queues = db.collection(QUEUES_COLLECTION_ID).stream()
         list_of_queues = [queue.to_dict() for queue in all_queues]
@@ -39,12 +39,20 @@ class QueueInFirestoreListCreateView(APIView):
         serializer = QueueInFirebaseSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         queue_id = serializer.data.get("queue_id")
+        queue_name = serializer.data.get("name")
+        branch_id = serializer.data.get("branch_id")
         try:
             if not db.collection(QUEUES_COLLECTION_ID).document(queue_id).get().exists:
                 queue_ref =  db.collection(QUEUES_COLLECTION_ID).document(queue_id)
                 queue_ref.set(serializer.data)
             else:
-                return Response("Queue not created", status=status.HTTP_204_NO_CONTENT)
+                return Response("Queue was not created", status=status.HTTP_204_NO_CONTENT)
+
+            branch_snapshot = db.collection(BRANCH_COLLECTION_ID).document(branch_id)
+            if branch_snapshot.get().exists == True:
+                branch_snapshot.update({"queues": firestore.ArrayUnion([{queue_id: queue_name}])})
+            else:
+                return Response("The provided branch doesn't exist. Couldn't add info about the queue to the branch. But the queue was successfully created.", status=status.HTTP_204_NO_CONTENT)
         except Exception as exception:
             return Response(f"Something went wrong when creating a document in the collection.\nException: {exception}")
 

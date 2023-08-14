@@ -10,6 +10,7 @@ class BranchInFirestoreSerializer(serializers.Serializer):
     address = serializers.CharField()
     working_hours = serializers.SerializerMethodField()
     branch_id = serializers.SerializerMethodField()
+    queues = serializers.ListField(read_only=True, default=[])
 
     def validate_institution_id(self, institution_id):
         collection_title = "institutions"
