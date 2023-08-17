@@ -14,8 +14,8 @@
     <h1>Branches of {{ instituion.name }} </h1>
 </div>
 
+{% for branch in branches %}
 <div class="row row-cols-1 row-cols-md-3 g-4">
-    {% for branch in branches %}
       <div class="col">
         <div class="card">
                 <h5 class="card-header">{{ branch.address }}</h5>
@@ -43,7 +43,9 @@
                 </div>
         </div>
       </div>
-    {% endfor %}
-</div>
+    </div>
+{% empty %}
+    <p class="text-center fs-1">Unfortunately, this institution doesn't have any branches that were registered on our platform yet.</p>
+{% endfor %}
 
 {% endblock %}

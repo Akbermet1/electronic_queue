@@ -50,9 +50,12 @@ def list_all_branches_of_institution_view(request, institution_id):
     branches = [branch.to_dict() for branch in docs_of_branches]
 
     # sorting the days of the week to display them in the correct order 
-    days_of_the_week = branches[0].get("working_hours")
-    all_days_of_week = [key for key in days_of_the_week.keys()]
-    order_of_the_days = order_days_of_week(all_days_of_week)
+    if len(branches) > 0:
+        days_of_the_week = branches[0].get("working_hours")
+        all_days_of_week = [key for key in days_of_the_week.keys()]
+        order_of_the_days = order_days_of_week(all_days_of_week)
+    else:
+        order_of_the_days = {}
     instituion = db.collection(INSTITUTIONS_COLLECTION_ID).document(institution_id).get().to_dict()
     context = {
         "branches": branches,
