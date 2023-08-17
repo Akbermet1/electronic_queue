@@ -30,7 +30,7 @@
                                 <li><a class="dropdown-item" href="{% url 'put-customer-in-queue' queue_id %}">{{ queue_address }}</a></li>  
                             {% endfor %}
                         {% empty %}
-                            <li><a class="dropdown-item" href="#">no registered queues</a></li>  
+                            <li><a class="dropdown-item disabled" href="#">no registered queues</a></li>  
                         {% endfor %}
                     </ul>
                     <h4 style="margin-top: 10px;">Working hours</h4>

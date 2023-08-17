@@ -25,9 +25,9 @@
                   {% for branch in institution.branches %}
                     {% for branch_id, branch_address in branch.items %}
                       <li><a class="dropdown-item" href="#">{{branch_address}}</a></li>
-                    {% empty %}
-                    <li><a class="dropdown-item disabled" href="#">no branches were registered</a></li>
                     {% endfor %}
+                  {% empty %}
+                    <li><a class="dropdown-item disabled" href="#">no branches were registered</a></li>
                   {% endfor %}
                   </ul>
                 </div>
