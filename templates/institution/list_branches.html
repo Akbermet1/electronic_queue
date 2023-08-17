@@ -16,8 +16,13 @@
                       Queues of this branch
                     </button>  
                     <ul class="dropdown-menu"> 
-                        <!-- loop through the queues of the branch  -->
-                        <li><a class="dropdown-item" href="#">list of queues</a></li>                 
+                        {% for queue in branch.queues %}
+                            {% for queue_id, queue_address in queue.items %}
+                                <li><a class="dropdown-item" href="{% url 'put-customer-in-queue' queue_id %}">{{ queue_address }}</a></li>  
+                            {% endfor %}
+                        {% empty %}
+                            <li><a class="dropdown-item" href="#">no registered queues</a></li>  
+                        {% endfor %}
                     </ul>
                     <h4 style="margin-top: 10px;">Working hours</h4>
                    {% for name, schedule in branch.working_hours.items %}
