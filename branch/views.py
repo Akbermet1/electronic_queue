@@ -3,10 +3,12 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from electronic_queue.firestore import db
+from firebase_admin.firestore import ArrayUnion
 from branch.serializers import BranchInFirestoreSerializer
 
 
 BRANCH_COLLECTION_ID = "branches"
+INSTITUTION_COLLECTION_ID = "institutions"
 
 
 class BranchInFirestoreDetailView(APIView):
@@ -34,8 +36,13 @@ class BranchInFirestoreListCreateView(APIView):
         serializer = BranchInFirestoreSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         branch_id = serializer.data.get("branch_id")
+        branch_address = serializer.data.get("address")
         branch_ref = db.collection(BRANCH_COLLECTION_ID).document(branch_id)
         branch_ref.set(serializer.data)
+
+        institution_id = serializer.data.get("institution_id")
+        institution_ref = db.collection(INSTITUTION_COLLECTION_ID).document(institution_id)
+        institution_ref.update({"branches": ArrayUnion([{branch_id: branch_address}])})
         return Response(branch_ref.get().to_dict(), status=status.HTTP_200_OK)
 
     def get(self, reuqest):

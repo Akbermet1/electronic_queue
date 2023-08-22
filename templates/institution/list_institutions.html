@@ -15,35 +15,31 @@
   {% for institution in institutions %}
     <div class="col">
       <div class="card">
-              <h5 class="card-header">{{ institution.name }}</h5>
-              <div class="card-body">
-                <div class="dropdown">
-                  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    List of queues
-                  </button>
-                  <ul class="dropdown-menu">
-                    {% for name in institution.queues %}
-                      {% if institution.queues %}
-                      {% url 'queue-in-firebase-list-create' as the_url_to_queue %}
-                      <li>
-                        <!-- <a class="dropdown-item" href="{{ the_url_to_queue }}">{{name}}</a></li> -->
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end" style="margin: 5px;">
-                          <a class="dropdown-item" href="{{ the_url_to_queue }}">{{name}}
-                          <button class="btn btn-primary me-md-2" type="button">Reserve a place</button>
-                          </a>
-                        </div>
-                      </li>
-                      {% endif %}
-                    {% empty %}
-                      <li><a class="dropdown-item" href="#">This insitution doesn't have any arrays for now</a></li>
-                    {% endfor %}
-                  </ul>
-                </div>
-              </div>
+          <h5 class="card-header">{{ institution.name }}</h5>
+          <div class="card-body">
+            <p class="card-text">The branches of this institution are located at the following locations: </p>
+            <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                List of branches
+              </button>
+              <ul class="dropdown-menu">
+              {% for branch in institution.branches %}
+                {% for branch_id, branch_address in branch.items %}
+                  <li><a class="dropdown-item" href="#">{{branch_address}}</a></li>
+                {% endfor %}
+              {% empty %}
+                <li><a class="dropdown-item disabled" href="#">no branches were registered</a></li>
+              {% endfor %}
+              </ul>
+            </div>
+            <hr>
+            <p class="card-text">To take a more detailed look at all the branches click the button below.</p>
+            <a href="{% url 'list-branches-of-institution' institution.institution_id %}" class="btn btn-primary">Browse detailed info</a>
+          </div>   
       </div>
     </div>
   {% endfor %}
+    
   </div>
-
 
 {% endblock %}

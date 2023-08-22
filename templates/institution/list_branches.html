@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    .list-group-flush>.list-group-item:last-child {
+        border-bottom-width: 1px;
+    }
+    .list-group-item {
+        padding: 16px 16px 16px 0;
+    }
+</style>
+
+<div class="p-4 p-md-5 mb-4 rounded text-bg-dark">
+    <h1>Branches of {{ instituion.name }} </h1>
+</div>
+
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for branch in branches %}
+      <div class="col">
+        <div class="card">
+                <h5 class="card-header">{{ branch.address }}</h5>
+                <div class="card-body">
+                  <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      Queues of this branch
+                    </button>  
+                    <ul class="dropdown-menu"> 
+                        {% for queue in branch.queues %}
+                            {% for queue_id, queue_address in queue.items %}
+                                <li><a class="dropdown-item" href="{% url 'put-customer-in-queue' queue_id %}">{{ queue_address }}</a></li>  
+                            {% endfor %}
+                        {% empty %}
+                            <li><a class="dropdown-item disabled" href="#">no registered queues</a></li>  
+                        {% endfor %}
+                    </ul>
+                    <h4 style="margin-top: 10px;">Working hours</h4>
+                   {% for name, schedule in branch.working_hours.items %}
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">{{ name }} - from {{schedule.from}} till {{schedule.till}}</li>
+                    </ul>
+                    {% endfor %}
+                  </div>
+                </div>
+        </div>
+      </div>
+    {% empty %}
+    </div>
+    <p class="text-center fs-1">Unfortunately, this institution doesn't have any branches that were registered on our platform yet.</p>
+    {% endfor %}
+
+{% endblock %}
