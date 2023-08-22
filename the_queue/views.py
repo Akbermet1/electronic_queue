@@ -111,7 +111,8 @@ def put_customer_in_queue_view(request, queue_id):
     }
 
     queue_ref = db.collection(QUEUES_COLLECTION_ID).document(queue_id)
-
+    queue_doc = queue_ref.get().to_dict()
+    context["queue_name"] = queue_doc.get("name")
 
     if request.method == "POST":
         recipients_email = request.POST.get("email", None)
@@ -123,7 +124,6 @@ def put_customer_in_queue_view(request, queue_id):
                 context["queue_exists"] = True
                 context["email"] = recipients_email
                 context["queue_id"] = queue_id
-                context["queue_name"] = queue_ref.get().to_dict().get("name")
 
                 queue_doc = queue_ref.get().to_dict().get("name")
                 institution_id = queue_ref.get().to_dict().get("institution_id")
@@ -148,7 +148,6 @@ def put_customer_in_queue_view(request, queue_id):
                     fail_silently=False
                 )
                 context["email_sent"] = True
-
 
     return render(request, "./queue/put_customer_in_queue.html",
                 context=context)
