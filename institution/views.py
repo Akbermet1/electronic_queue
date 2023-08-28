@@ -73,5 +73,5 @@ def manage_institutions_queue(request, institution_id, queue_id):
     if queue_doc.exists:
         serializer = QueueInFirebaseSerializer(data=queue_doc.to_dict())
         serializer.is_valid(raise_exception=True)
-        return Response(queue_doc.to_dict())
+        return render(request, "./queue/manage_queue.html", context=queue_doc.to_dict())
     return Response("Provided queue ID didn't match any queue!", status=status.HTTP_406_NOT_ACCEPTABLE)
