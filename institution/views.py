@@ -5,7 +5,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from branch.views import BRANCH_COLLECTION_ID
 from electronic_queue.firestore import db
-from the_queue.views import INSTITUTIONS_COLLECTION_ID
+from the_queue.views import INSTITUTIONS_COLLECTION_ID, QUEUES_COLLECTION_ID
+from the_queue.serializers import QueueInFirebaseSerializer
 
 
 def list_institutions(request):
@@ -63,3 +64,14 @@ def list_all_branches_of_institution_view(request, institution_id):
         "order_of_the_days": order_of_the_days
     }
     return render(request, "./institution/list_branches.html", context=context)
+
+
+@api_view(["GET"])
+def manage_institutions_queue(request, institution_id, queue_id):
+    queue_doc = db.collection(QUEUES_COLLECTION_ID).document(queue_id).get()
+
+    if queue_doc.exists:
+        serializer = QueueInFirebaseSerializer(data=queue_doc.to_dict())
+        serializer.is_valid(raise_exception=True)
+        return Response(queue_doc.to_dict())
+    return Response("Provided queue ID didn't match any queue!", status=status.HTTP_406_NOT_ACCEPTABLE)
