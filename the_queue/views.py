@@ -135,6 +135,10 @@ def put_customer_in_queue_view(request, queue_id):
                     "queue": firestore.ArrayUnion([confirmation_code])
                 })
 
+                queue_ref.update({
+                    "customer_count": firestore.Increment(1)
+                })
+
                 # save information about the confirmation code
                 db.collection(CONFIRMATION_CODES_COLLECTION_ID).document(confirmation_code).set({"document_id": confirmation_code,
                                                                                                 "user_email": recipients_email,
@@ -251,7 +255,34 @@ class QueueInFirestoreMoveView(APIView):
                     "queue": firestore.ArrayRemove([confirmation_code])    
                 }
             )
+            queue_ref.update(
+                {
+                    "customer_count": firestore.Increment(-1)    
+                }
+            )
             return Response(f"Customer with the confimation code: {confirmation_code} was removed from the queue.", status=status.HTTP_204_NO_CONTENT)
         else:
             return Response("The queue is empty.", status=status.HTTP_204_NO_CONTENT)
 
+
+def move_queue(queue_id):
+    queue_ref = db.collection(QUEUES_COLLECTION_ID).document(queue_id)
+    if queue_ref.get().exists:
+        the_queue = queue_ref.get().to_dict().get("queue", None)
+
+        if the_queue is not None:
+            confirmation_code = the_queue.pop(0) if len(the_queue) >= 1 else None
+
+            if confirmation_code is not None:
+                queue_ref.update(
+                    {
+                        "queue": firestore.ArrayRemove([confirmation_code])    
+                    }
+                )
+                queue_ref.update(
+                    {
+                        "customer_count": firestore.Increment(-1)    
+                    }
+                )
+                return confirmation_code
+    return None

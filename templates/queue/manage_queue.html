@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+{% if line_moved %}
+    <h3>Customer with the confimation code: {{ confirmation_code }} was removed from the queue</h3>
+{% else %}
+    <br>
+    <h2>{{ name }} queue located at "include branch address or name" </h2>
+    <br>
+    <h3>Number of people in line: {{ customer_count }}</h3>
+    {% if customer_count >= 1 %}
+    <p>First in line: {{ queue.0 }}</p>
+    {% else %}
+    <p>You will be able to see the first two customers once they sign up</p>
+    {% endif %}
+    <br>
+    {% if customer_count > 1 %}
+    <p>Next in line: {{ queue.1 }} </p>
+    {% endif %}
+
+    {% if customer_count >= 1 %}
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Move the queue</button>
+    </form>
+    {% endif %}
+
+{% endif %}
+{% endblock %}
