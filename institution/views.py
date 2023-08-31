@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from branch.views import BRANCH_COLLECTION_ID
 from electronic_queue.firestore import db
-from the_queue.views import INSTITUTIONS_COLLECTION_ID, QUEUES_COLLECTION_ID
+from the_queue.views import INSTITUTIONS_COLLECTION_ID, QUEUES_COLLECTION_ID, move_queue
 from the_queue.serializers import QueueInFirebaseSerializer
 
 
@@ -66,12 +66,22 @@ def list_all_branches_of_institution_view(request, institution_id):
     return render(request, "./institution/list_branches.html", context=context)
 
 
-@api_view(["GET"])
+@api_view(["GET", "POST"])
 def manage_institutions_queue(request, institution_id, queue_id):
     queue_doc = db.collection(QUEUES_COLLECTION_ID).document(queue_id).get()
+    context = {
+        "line_moved": False,
+    }
+
+    if request.method == "POST":
+        removed_confirmation_code = move_queue(queue_id)
+        if removed_confirmation_code is not None:
+            context["line_moved"] = True
+            context["confirmation_code"] = removed_confirmation_code
 
     if queue_doc.exists:
         serializer = QueueInFirebaseSerializer(data=queue_doc.to_dict())
         serializer.is_valid(raise_exception=True)
-        return render(request, "./queue/manage_queue.html", context=queue_doc.to_dict())
+        context.update(queue_doc.to_dict())
+        return render(request, "./queue/manage_queue.html", context=context)
     return Response("Provided queue ID didn't match any queue!", status=status.HTTP_406_NOT_ACCEPTABLE)

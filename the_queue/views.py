@@ -264,3 +264,25 @@ class QueueInFirestoreMoveView(APIView):
         else:
             return Response("The queue is empty.", status=status.HTTP_204_NO_CONTENT)
 
+
+def move_queue(queue_id):
+    queue_ref = db.collection(QUEUES_COLLECTION_ID).document(queue_id)
+    if queue_ref.get().exists:
+        the_queue = queue_ref.get().to_dict().get("queue", None)
+
+        if the_queue is not None:
+            confirmation_code = the_queue.pop(0) if len(the_queue) >= 1 else None
+
+            if confirmation_code is not None:
+                queue_ref.update(
+                    {
+                        "queue": firestore.ArrayRemove([confirmation_code])    
+                    }
+                )
+                queue_ref.update(
+                    {
+                        "customer_count": firestore.Increment(-1)    
+                    }
+                )
+                return confirmation_code
+    return None
