@@ -73,6 +73,15 @@ class QueueInFirestoreDetailView(APIView):
         queue_ref = db.collection(QUEUES_COLLECTION_ID).document(queue_id)
 
         if queue_ref.get().exists:
+            queue = queue_ref.get().to_dict()
+            queue_name = queue.get("name")
+            branch_id = queue.get("branch_id")
+
+            branch_ref = db.collection(BRANCH_COLLECTION_ID).document(branch_id)
+            if branch_ref.get().exists:
+                branch_ref.update({
+                    "queues": firestore.ArrayRemove([{queue_id: queue_name}])
+                })
             queue_ref.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
