@@ -20,10 +20,6 @@ def list_institutions(request):
     return render(request, "./institution/list_institutions.html", context=context)
 
 
-def test_view(request):
-    return render(request, "base.html")
-
-
 def order_days_of_week(all_days_of_week: List):
     order_of_the_days = {}
     for day in all_days_of_week:
