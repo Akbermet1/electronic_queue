@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from firebase_admin import firestore
 
 from electronic_queue.firestore import db
 from firebase_admin.firestore import ArrayUnion
@@ -24,6 +25,15 @@ class BranchInFirestoreDetailView(APIView):
         branch_ref = db.collection(BRANCH_COLLECTION_ID).document(branch_id)
 
         if branch_ref.get().exists:
+            branch_doc = branch_ref.get().to_dict()
+            branch_address = branch_doc.get("address")
+            institution_id = branch_doc.get("institution_id")
+            institution_ref = db.collection(INSTITUTION_COLLECTION_ID).document(institution_id)
+
+            if institution_ref.get().exists:
+                institution_ref.update({
+                    "branches": firestore.ArrayRemove([{branch_id: branch_address}])
+                })
             branch_ref.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
