@@ -4,3 +4,5 @@ firebase-admin==6.0.1
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
 django-cors-headers==3.13.0
+crispy-bootstrap5-0.7
+django-crispy-forms-2.0
