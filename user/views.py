@@ -12,11 +12,13 @@ def register_user_view(response):
         if form.is_valid():
             form.save()
             institution_name = form.cleaned_data['institution_name']
+            institution_email = form.cleaned_data["email"]
             institution_id = str(uuid.uuid4())[:10]
             institution_ref = db.collection(INSTITUTIONS_COLLECTION_ID).document(institution_id)
             institution_fields = {
                 "institution_id": institution_id,
                 "name": institution_name,
+                "email": institution_email,
                 "branches": [],
                 "queues": [],
             }
