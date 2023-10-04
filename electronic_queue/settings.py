@@ -203,3 +203,5 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 
 LOGIN_REDIRECT_URL = reverse_lazy("list-institutions")
+#later create a custom logout redirect template & view
+LOGOUT_REDIRECT_URL = reverse_lazy("list-institutions")
