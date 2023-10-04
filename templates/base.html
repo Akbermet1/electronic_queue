@@ -28,8 +28,13 @@
                   <a class="nav-link" href="{% url 'list-institutions' %}">Institutions</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Login / Register</a>
+                    <a class="nav-link" href="/api/user/login">Login / Register</a>
                 </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Account</a>
+                </li>
+                {% endif %}
               </ul>
         </div>  
     </nav>
