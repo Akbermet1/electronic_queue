@@ -1,10 +1,8 @@
-from django.urls import path 
-from user.views import (RegisterView, LoginView)
-# from user.views import UserView
+from django.urls import path, include
+from user.views import register_user_view
 
 
 urlpatterns = [
-    path("register/", RegisterView.as_view()),
-    path("login/", LoginView.as_view()),
-    # path("",UserView.as_view()),
+    path("", include("django.contrib.auth.urls")),
+    path("register/", register_user_view, name="register-user-view"),
 ]
