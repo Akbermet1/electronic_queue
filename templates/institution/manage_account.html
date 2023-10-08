@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if not institution and true_match_found %}
+    <h3>There is no institution matching your user </h3>
+{% else %}
+
+<div class="p-4 p-md-5 mb-4 rounded" style="background-color: #0d6efd; color: white;">
+    <h1>All branches of {{institution.name}} </h1>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+{% for branch in branches %}
+
+    <div class="col">
+    <div class="card">
+        <h5 class="card-header">{{ branch.address }}</h5>
+        <div class="card-body">
+            <p class="card-text">Select a queue to manage: </p>
+            <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                List of queues
+            </button>
+            <ul class="dropdown-menu"> 
+                {% for queue in branch.queues %}
+                    {% for queue_id, queue_address in queue.items %}
+                        <!-- link should redirect to a page to modify the queue - to be implamented  -->
+                        <li><a class="dropdown-item" href="{% url 'put-customer-in-queue' queue_id %}">{{ queue_address }}</a></li>  
+                    {% endfor %}
+                {% empty %}
+                    <li><a class="dropdown-item disabled" href="#">no registered queues</a></li>  
+                {% endfor %}
+            </ul>
+            </div>
+        </div>   
+    </div>
+    </div> 
+{% empty %}
+    <h4>No branches were created yet. </h4>
+{% endfor %}
+    </div>
+<br>
+<p>add a link to logout</p>
+{% endif %}
+{% endblock %}
