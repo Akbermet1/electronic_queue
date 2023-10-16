@@ -17,20 +17,29 @@
         <h5 class="card-header">{{ branch.address }}</h5>
         <div class="card-body">
             <p class="card-text">Select a queue to manage: </p>
-            <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                List of queues
-            </button>
-            <ul class="dropdown-menu"> 
-                {% for queue in branch.queues %}
-                    {% for queue_id, queue_address in queue.items %}
-                        <li><a class="dropdown-item" href="{% url 'manage-institutions-queue' institution.institution_id queue_id %}">{{ queue_address }}</a></li>  
-                    {% endfor %}
-                {% empty %}
-                    <li><a class="dropdown-item disabled" href="#">no registered queues</a></li>  
-                {% endfor %}
-            </ul>
+            <div class="container text-center">
+            <div class="row justify-content-between"> 
+                <div class="col-6">
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            List of queues
+                        </button>
+                        <ul class="dropdown-menu"> 
+                            {% for queue in branch.queues %}
+                                {% for queue_id, queue_address in queue.items %}
+                                    <li><a class="dropdown-item" href="{% url 'manage-institutions-queue' institution.institution_id queue_id %}">{{ queue_address }}</a></li>  
+                                {% endfor %}
+                            {% empty %}
+                                <li><a class="dropdown-item disabled" href="#">no registered queues</a></li>  
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <button type="button" class="btn btn-primary">Add new queue</button>
+                </div>
             </div>
+        </div>
         </div>   
     </div>
     </div> 
