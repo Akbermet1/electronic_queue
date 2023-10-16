@@ -52,3 +52,11 @@ class QueueInFirebaseSerializer(serializers.Serializer):
         number_in_line = str(uuid.uuid4())
         return number_in_line
     
+    def retrieve_branch_address(self, branch_id):
+        branch_ref = db.collection(BRANCH_COLLECTION_ID).document(branch_id).get()
+        if branch_ref.exists:
+            branch_doc = branch_ref.to_dict()
+            branch_address = branch_doc.get("address")
+            if branch_address is not None:
+                return branch_address
+        return ""

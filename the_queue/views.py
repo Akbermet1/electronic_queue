@@ -1,4 +1,5 @@
 import uuid
+import string
 from django.core.mail import send_mail
 from django.conf import settings
 from django.shortcuts import render
@@ -295,3 +296,35 @@ def move_queue(queue_id):
                 )
                 return confirmation_code
     return None
+
+
+def update_queue_name(branch_id, queue_id, old_name,  new_name):
+    branch_snap = db.collection(BRANCH_COLLECTION_ID).document(branch_id)
+    branch_ref = branch_snap.get()
+
+    if branch_ref.exists:
+        branch_doc = branch_ref.to_dict()
+        queues_of_branch = branch_doc.get("queues")
+        
+        queue_snap = db.collection(QUEUES_COLLECTION_ID).document(queue_id)
+        queue_ref = queue_snap.get()
+        if queue_ref.exists and queues_of_branch:
+            branches_ref = db.collection(BRANCH_COLLECTION_ID)
+            result = branches_ref.where("queues", "array_contains", {queue_id: old_name}).stream()
+            list_result = [q.to_dict() for q in result]
+
+            if list_result:
+                queue_snap.update({
+                    "name": new_name
+                })
+                branch_snap.update({
+                    "queues": firestore.ArrayRemove([{queue_id: old_name}])
+                })
+
+                branch_snap.update({
+                    "queues": firestore.ArrayUnion([{queue_id: new_name}])
+                })
+                return True
+        else:
+            return False
+

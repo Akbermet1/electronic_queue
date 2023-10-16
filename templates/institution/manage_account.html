@@ -24,8 +24,7 @@
             <ul class="dropdown-menu"> 
                 {% for queue in branch.queues %}
                     {% for queue_id, queue_address in queue.items %}
-                        <!-- link should redirect to a page to modify the queue - to be implamented  -->
-                        <li><a class="dropdown-item" href="{% url 'put-customer-in-queue' queue_id %}">{{ queue_address }}</a></li>  
+                        <li><a class="dropdown-item" href="{% url 'manage-institutions-queue' institution.institution_id queue_id %}">{{ queue_address }}</a></li>  
                     {% endfor %}
                 {% empty %}
                     <li><a class="dropdown-item disabled" href="#">no registered queues</a></li>  

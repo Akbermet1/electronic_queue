@@ -4,7 +4,10 @@ from django.contrib.auth import login, authenticate
 from user.forms import RegisterUserForm
 from electronic_queue.firestore import db
 from institution.views import INSTITUTIONS_COLLECTION_ID, BRANCH_COLLECTION_ID
+from the_queue.views import QUEUES_COLLECTION_ID
 from django.contrib.auth.decorators import login_required
+
+
 
 
 
@@ -52,13 +55,10 @@ def manage_user_account_view(request):
         docs_of_branches = branches_ref.where("institution_id", "==", institution_id).stream()
         branches = [branch.to_dict() for branch in docs_of_branches]
     
-    print(institution_doc)
     context = {
         "institution": institution_doc,
         "branches": branches,
         "true_match_found": true_match_found,
     }
-    print(request.user)
-    print(request.user.email)
     return render(request, "./institution/manage_account.html", context=context)
 

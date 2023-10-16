@@ -1,12 +1,14 @@
 from typing import List
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
+from django.contrib.auth.decorators import login_required
 from branch.views import BRANCH_COLLECTION_ID
 from electronic_queue.firestore import db
-from the_queue.views import INSTITUTIONS_COLLECTION_ID, QUEUES_COLLECTION_ID, move_queue
+from the_queue.views import (INSTITUTIONS_COLLECTION_ID, QUEUES_COLLECTION_ID, move_queue, update_queue_name)
 from the_queue.serializers import QueueInFirebaseSerializer
+from institution.utils import confirm_queue_owner
 
 
 def list_institutions(request):
@@ -62,22 +64,56 @@ def list_all_branches_of_institution_view(request, institution_id):
     return render(request, "./institution/list_branches.html", context=context)
 
 
+@login_required(login_url="/api/user/login/")
 @api_view(["GET", "POST"])
 def manage_institutions_queue(request, institution_id, queue_id):
-    queue_doc = db.collection(QUEUES_COLLECTION_ID).document(queue_id).get()
+    user_email = request.user.email
+    user_owns_queue = confirm_queue_owner(queue_id=queue_id, institution_email=user_email)
+
+    if not user_owns_queue:
+        return redirect("list-institutions")
+
+    queue_doc = db.collection(QUEUES_COLLECTION_ID).document(queue_id)
     context = {
         "line_moved": False,
+        "institution_id": institution_id,
     }
 
     if request.method == "POST":
-        removed_confirmation_code = move_queue(queue_id)
-        if removed_confirmation_code is not None:
-            context["line_moved"] = True
-            context["confirmation_code"] = removed_confirmation_code
+        new_queue_name = request.POST["new_title"]
+        checked_input_fields = request.POST.getlist("checks")
+        move_this_queue = True if "move_queue" in checked_input_fields else False
+        visible_customer_count = True if "visible_customer_count" in checked_input_fields else False
 
-    if queue_doc.exists:
-        serializer = QueueInFirebaseSerializer(data=queue_doc.to_dict())
+        if move_this_queue:
+            removed_confirmation_code = move_queue(queue_id)
+            if removed_confirmation_code is not None:
+                context["line_moved"] = True
+                context["confirmation_code"] = removed_confirmation_code
+        
+        if queue_doc.get().exists:
+            queue_content = queue_doc.get().to_dict()
+            current_customer_count_visible = queue_content.get("customer_count_visible")
+
+            if visible_customer_count:
+                queue_doc.update({
+                    "customer_count_visible": not current_customer_count_visible
+                })
+
+            if new_queue_name:
+                current_queue_name = queue_content.get("name")
+                branch_id = queue_content.get("branch_id")
+                update_queue_name(branch_id=branch_id, queue_id=queue_id, old_name=current_queue_name, new_name=new_queue_name)
+
+
+    if queue_doc.get().exists:
+        queue_content = queue_doc.get().to_dict()
+        serializer = QueueInFirebaseSerializer(data=queue_content)
         serializer.is_valid(raise_exception=True)
-        context.update(queue_doc.to_dict())
+        branch_address = serializer.retrieve_branch_address(serializer.data.get("branch_id"))
+        context.update(queue_content)
+        
+        if branch_address:
+            context.update({"branch_address": branch_address})
         return render(request, "./queue/manage_queue.html", context=context)
     return Response("Provided queue ID didn't match any queue!", status=status.HTTP_406_NOT_ACCEPTABLE)

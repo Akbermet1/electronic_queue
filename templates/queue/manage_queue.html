@@ -1,10 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
 {% if line_moved %}
-    <h3>Customer with the confimation code: {{ confirmation_code }} was removed from the queue</h3>
+<div class="row-cols-1 row-cols-md-3 g-4">
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">The queue was moved!</h4>
+        <p>The queue moved to the next customer in line</p>
+        <hr>
+        <p class="mb-0">Customer with the confimation code: {{ confirmation_code }} was removed from the queue</p>
+        <a href="{% url 'manage-institutions-queue' institution_id queue_id %}">Return to managing the queue</a>
+    </div>
+</div>
 {% else %}
     <br>
-    <h2>{{ name }} queue located at "include branch address or name" </h2>
+    <h2>"{{ name }}" queue located at {{ branch_address }} </h2>
     <br>
     <h3>Number of people in line: {{ customer_count }}</h3>
     {% if customer_count >= 1 %}
@@ -12,17 +20,39 @@
     {% else %}
     <p>You will be able to see the first two customers once they sign up</p>
     {% endif %}
-    <br>
+
     {% if customer_count > 1 %}
     <p>Next in line: {{ queue.1 }} </p>
     {% endif %}
 
-    {% if customer_count >= 1 %}
+    <u><p>Customer counter visible to the public</u>: {{customer_count_visible}}</p>
+    <br>
+    <h3>Make changes in this queue </h3>
     <form method="POST">
         {% csrf_token %}
-        <button type="submit" class="btn btn-primary">Move the queue</button>
-    </form>
-    {% endif %}
+        <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">New Title/Name for this queue</label>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="1" name="new_title"></textarea>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="visible_customer_count" id="flexCheckDefault" name="checks">
+            <label class="form-check-label" for="flexCheckDefault">
+            Inverse the visibility of customer counter
+            </label>
+        </div>
+
+        {% if customer_count >= 1 %}
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="move_queue" id="flexCheckDefault" name="checks">
+            <label class="form-check-label" for="flexCheckDefault">
+            Move the queue
+            </label>
+        </div>
+        {% endif %}
+        <br>
+        <button type="submit" class="btn btn-primary">Apply changes</button>
+    </form> 
 
 {% endif %}
 {% endblock %}
