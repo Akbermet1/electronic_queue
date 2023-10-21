@@ -13,7 +13,7 @@
 {% for branch in branches %}
 
     <div class="col">
-    <div class="card">
+    <div class="card text-center">
         <h5 class="card-header">{{ branch.address }}</h5>
         <div class="card-body">
             <p class="card-text">Select a queue to manage: </p>
@@ -38,16 +38,26 @@
                 <div class="col-6">
                     <button type="button" class="btn btn-primary">Add new queue</button>
                 </div>
+                
             </div>
+            <hr>
+            <div class="row">
+                <div class="col">
+                    <a href="#" class="card-link">Delete this branch</a>
+                </div>
+            </div>
+            
         </div>
         </div>   
     </div>
+        
     </div> 
 {% empty %}
     <h4>No branches were created yet. </h4>
 {% endfor %}
     </div>
 <br>
-<p>add a link to logout</p>
+<p><a href="#" class="link-underline-info">Add new branch</a></p>
+<p><a href="#" class="link-underline-info">Logout</a></p>
 {% endif %}
 {% endblock %}
