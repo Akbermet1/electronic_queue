@@ -5,8 +5,10 @@
   <div class="row row-cols-1" style="margin-bottom: 15px; margin-top: 15px;">
     <h2>"{{ queue_name }}" queue</h2>
   </div>
+  {% if customer_count_visible %}
+    <p>The number of customers in the queue: {{ customer_count }}</p>
+  {% endif %}
   <div class="row row-cols-1 row-cols-md-3 g-4" style="margin-bottom: 15px; margin-top: 15px;">
-    <!-- <h2>You're entering your information to stand in a virtual queue called "{{ queue_name }}"</h2> -->
     <form method="POST">
       {% csrf_token %}
         <div class="mb-3">

@@ -123,6 +123,8 @@ def put_customer_in_queue_view(request, queue_id):
     queue_ref = db.collection(QUEUES_COLLECTION_ID).document(queue_id)
     queue_doc = queue_ref.get().to_dict()
     context["queue_name"] = queue_doc.get("name")
+    context["customer_count"] = queue_doc.get("customer_count")
+    context["customer_count_visible"] = queue_doc.get("customer_count_visible")
 
     if request.method == "POST":
         recipients_email = request.POST.get("email", None)
